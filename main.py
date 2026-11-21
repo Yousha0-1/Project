@@ -26,6 +26,8 @@ model = genai.GenerativeModel(
 
 # Global olarak seçilen dili tutacağımız değişken
 secilen_dil_kodu = "tr"
+# Arka plan görsel durumu (1: art.png, 2: art2.png)
+arkaplan_durumu = 1
 
 
 def gecmise_kaydet(soru, cevap):
@@ -86,9 +88,9 @@ def sesli_soru_al(dil_kodu='tr-TR', sure=10):
             return ""
 
 
-# ==========================================
-# 🎨 ÖZEL DİL SEÇİM EKRANI
-# ==========================================
+
+# ÖZEL DİL SEÇİM EKRANI
+
 def ozel_dil_secim_penceresi():
     secim_penceresi = tk.Tk()
     secim_penceresi.title("Dil Seçimi / Language Selection")
@@ -123,7 +125,6 @@ def ozel_dil_secim_penceresi():
         btn = tk.Button(secim_penceresi, text=yazi, font=("Arial", 11, "bold"), bg="#4caf50", fg="white", width=20, pady=4, bd=0, command=lambda k=kod: dil_sec(k))
         btn.pack(pady=4)
 
-    # Açılış ekranına da çıkış butonu koyalım
     def uygulamadan_cik():
         secim_penceresi.destroy()
         exit()
@@ -135,12 +136,9 @@ def ozel_dil_secim_penceresi():
     return secilen["deger"]
 
 
-# ==========================================
-# ⏱️ ÖZEL KONUŞMA SÜRESİ SEÇİM PENCERESİ (İptal Butonlu)
-# ==========================================
-# ==========================================
-# ⏱️ ÖZEL VE DİLE DUYARLI KONUŞMA SÜRESİ PENCERESİ
-# ==========================================
+
+#  ÖZEL VE DİLE DUYARLI KONUŞMA SÜRESİ PENCERESİ
+
 def sure_secim_penceresi(dil_kodu):
     sure_penceresi = tk.Toplevel()
     sure_penceresi.geometry("400x350")
@@ -155,38 +153,12 @@ def sure_secim_penceresi(dil_kodu):
     y = (sure_penceresi.winfo_screenheight() // 2) - (h // 2)
     sure_penceresi.geometry(f'{w}x{h}+{x}+{y}')
 
-    # Dillere göre süre penceresi metinleri
     sure_metinleri = {
-        "en": {
-            "baslik": "Listening Duration",
-            "soru": "Please select microphone duration:",
-            "sn": "Seconds",
-            "iptal": "❌ Cancel"
-        },
-        "ja": {
-            "baslik": "録音時間の設定",
-            "soru": "マイクの録音時間を選択してください:",
-            "sn": "秒",
-            "iptal": "❌ キャンセル"
-        },
-        "nl": {
-            "baslik": "Luisterduur",
-            "soru": "Selecteer microfoontijd:",
-            "sn": "Seconden",
-            "iptal": "❌ Annuleren"
-        },
-        "ru": {
-            "baslik": "Время записи",
-            "soru": "Выберите время записи микрофона:",
-            "sn": "Секунд",
-            "iptal": "❌ Отмена"
-        },
-        "tr": {
-            "baslik": "Dinleme Süresi",
-            "soru": "Lütfen Dinleme Süresini Seçin:",
-            "sn": "Saniye",
-            "iptal": "❌ İptal"
-        }
+        "en": {"baslik": "Listening Duration", "soru": "Please select microphone duration:", "sn": "Seconds", "iptal": "❌ Cancel"},
+        "ja": {"baslik": "録音時間の設定", "soru": "マイクの録音時間を選択してください:", "sn": "秒", "iptal": "❌ キャンセル"},
+        "nl": {"baslik": "Luisterduur", "soru": "Selecteer microfoontijd:", "sn": "Seconden", "iptal": "❌ Annuleren"},
+        "ru": {"baslik": "Время записи", "soru": "Выберите время записи микрофона:", "sn": "Секунд", "iptal": "❌ Отмена"},
+        "tr": {"baslik": "Dinleme Süresi", "soru": "Lütfen Dinleme Süresini Seçin:", "sn": "Saniye", "iptal": "❌ İptal"}
     }
 
     aktif_metin = sure_metinleri.get(dil_kodu, sure_metinleri["tr"])
@@ -204,11 +176,8 @@ def sure_secim_penceresi(dil_kodu):
         secilen_sure["deger"] = None
         sure_penceresi.destroy()
 
-    sureler = [5, 10, 15, 20]
-
-    for sn in sureler:
-        btn_yazi = f"{sn} {aktif_metin['sn']}"
-        btn = tk.Button(sure_penceresi, text=btn_yazi, font=("Arial", 11, "bold"), bg="#1abc9c", fg="white", width=22, pady=4, bd=0, command=lambda s=sn: sure_sec(s))
+    for sn in [5, 10, 15, 20]:
+        btn = tk.Button(sure_penceresi, text=f"{sn} {aktif_metin['sn']}", font=("Arial", 11, "bold"), bg="#1abc9c", fg="white", width=22, pady=4, bd=0, command=lambda s=sn: sure_sec(s))
         btn.pack(pady=4)
 
     btn_iptal = tk.Button(sure_penceresi, text=aktif_metin["iptal"], font=("Arial", 10, "bold"), bg="#7f8c8d", fg="white", width=22, pady=3, bd=0, command=iptal_et)
@@ -218,9 +187,9 @@ def sure_secim_penceresi(dil_kodu):
     return secilen_sure["deger"]
 
 
-# ==========================================
-# 🎨 ÖZEL YAZILI SORU PENCERESİ
-# ==========================================
+
+# ÖZEL YAZILI SORU PENCERESİ
+
 def ozel_yazi_penceresi(baslik, soru_metni_txt):
     yazi_penceresi = tk.Toplevel()
     yazi_penceresi.title(baslik)
@@ -255,9 +224,7 @@ def ozel_yazi_penceresi(baslik, soru_metni_txt):
     return sonuc["metin"]
 
 
-# ==========================================
-# 📜 SOHBET GEÇMİŞİ PENCERESİ
-# ==========================================
+# SOHBET GEÇMİŞİ PENCERESİ
 def gecmis_penceresi_ac(baslik):
     gecmis_penceresi = tk.Toplevel()
     gecmis_penceresi.title(baslik)
@@ -324,6 +291,26 @@ def arayuz_baslat():
     bg_label = tk.Label(pencere)
     bg_label.place(relwidth=1, relheight=1)
 
+    #  art.png ve art2.png arasında geçiş yapacak tıklama fonksiyonu
+    def arka_plani_degistir(event=None):
+        global arkaplan_durumu
+        try:
+            if arkaplan_durumu == 1:
+                dosya_adi = "art2.png"
+                arkaplan_durumu = 2
+            else:
+                dosya_adi = "art.png"
+                arkaplan_durumu = 1
+
+            pil_image = Image.open(dosya_adi)
+            pil_image = pil_image.resize((ekran_genislik, ekran_yukseklik), Image.Resampling.LANCZOS)
+            bg_image = ImageTk.PhotoImage(pil_image)
+            
+            bg_label.config(image=bg_image)
+            bg_label.image = bg_image
+        except Exception as e:
+            print(f"Görsel değiştirilirken hata oluştu: {e}")
+
     try:
         pil_image = Image.open("art.png")
         pil_image = pil_image.resize((ekran_genislik, ekran_yukseklik), Image.Resampling.LANCZOS)
@@ -332,10 +319,13 @@ def arayuz_baslat():
         bg_label.config(image=bg_image)
         bg_label.image = bg_image
     except Exception as e:
-        print(f"⚠️ Resim yüklenirken hata oluştu: {e}")
+        print(f"Resim yüklenirken hata oluştu: {e}")
         bg_label.config(bg="#e0f2f1")
 
-    # 🌐 Dil Sözlüğü (Çıkış kelimesi eklendi)
+    # Arka plana (karaktere) tıklandığında görseli değiştirme bağlayıcısı
+    bg_label.bind("<Button-1>", arka_plani_degistir)
+
+    # Dil Sözlüğü
     metinler = {
         "en": {
             "kod": "en-US", "tts": "en",
@@ -406,7 +396,6 @@ def arayuz_baslat():
     def konus_tikla():
         secilen_sure = sure_secim_penceresi(secilen_dil_kodu)
         
-        # Eğer kullanıcı süre ekranında İptal'e basarsa (None dönerse) işlem yapılmaz
         if secilen_sure is None:
             durum_etiketi.config(text=secilen_dil["iptal_mesaji"])
             pencere.update()
@@ -472,7 +461,6 @@ def arayuz_baslat():
     btn_dil = tk.Button(buton_cercevesi, text=secilen_dil["dil"], font=("Arial", 11, "bold"), bg="#6d4c41", fg="white", padx=12, pady=6, bd=0, command=dil_degistir)
     btn_dil.pack(side=tk.LEFT, padx=5)
 
-    # ❌ Çıkış Butonu Eklendi
     btn_cikis = tk.Button(buton_cercevesi, text=secilen_dil["cikis"], font=("Arial", 11, "bold"), bg="#c0392b", fg="white", padx=12, pady=6, bd=0, command=uygulamadan_cikis)
     btn_cikis.pack(side=tk.LEFT, padx=5)
 
